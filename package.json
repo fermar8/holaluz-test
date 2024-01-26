@@ -1,0 +1,25 @@
+{
+    "scripts": {
+        "test": "jest",
+        "test:verbose": "jest --verbose",
+        "test:coverage": "jest --coverage",
+        "prettier:fix": "npx prettier -w ./**/*.ts",
+        "start:dev": "node app/index.js",
+        "start:prod": "node dist/index.js",
+        "build": "tsc -p tsconfig.json"
+    },
+    "devDependencies": {
+        "@types/jest": "^29.5.11",
+        "@types/node": "^20.11.6",
+        "@types/xml2js": "^0.4.14",
+        "jest": "^29.7.0",
+        "ts-jest": "^29.1.2",
+        "prettier": "^3.2.4",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.3.3"
+    },
+    "dependencies": {
+        "csv-parser": "^3.0.0",
+        "xml2js": "^0.6.2"
+    }
+}
