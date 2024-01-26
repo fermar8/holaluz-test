@@ -1,8 +1,8 @@
 {
     "scripts": {
-        "test": "jest",
-        "test:verbose": "jest --verbose",
-        "test:coverage": "jest --coverage",
+        "test": "jest app",
+        "test:verbose": "jest --verbose app",
+        "test:coverage": "jest --coverage app",
         "prettier:fix": "npx prettier -w ./**/*.ts",
         "start:dev": "node app/index.js",
         "start:prod": "node dist/index.js",
