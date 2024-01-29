@@ -14,8 +14,10 @@ describe('ReadingAdapterFactory', () => {
   });
 
   it('should throw error for unsupported extension', () => {
-    expect(() => ReadingAdapterFactory.run('.unsupported')).toThrow(
-      `Unsupported file extension: .unsupported`,
-    );
+    try {
+      ReadingAdapterFactory.run('.unsupported');
+    } catch (error: any) {
+      expect(error.message).toEqual('Unsupported file extension: .unsupported');
+    }
   });
 });

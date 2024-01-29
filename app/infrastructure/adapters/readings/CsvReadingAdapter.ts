@@ -1,6 +1,9 @@
 import fs from 'fs';
 import csv from 'csv-parser';
 
+import CsvRow from './interface/CsvRow';
+import CsvParseError from './errors/CsvParseError';
+
 import Reading from '../../../domain/model/reading/Reading';
 import ReadingAdapter from './ReadingAdapter';
 
@@ -10,7 +13,7 @@ export default class CsvReadingAdapter implements ReadingAdapter {
     return new Promise((resolve, reject) => {
       fs.createReadStream(filePath)
         .pipe(csv())
-        .on('data', (row: any) => {
+        .on('data', (row: CsvRow) => {
           const formattedReading = {
             clientID: row['client'],
             period: row['period'],
@@ -22,7 +25,7 @@ export default class CsvReadingAdapter implements ReadingAdapter {
           resolve(formattedReadings);
         })
         .on('error', (err) => {
-          reject(err);
+          reject(new CsvParseError());
         });
     });
   }

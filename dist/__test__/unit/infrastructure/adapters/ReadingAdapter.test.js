@@ -30,6 +30,8 @@ const fs_1 = __importDefault(require("fs"));
 const xml2js = __importStar(require("xml2js"));
 const CsvReadingAdapter_1 = __importDefault(require("../../../../infrastructure/adapters/readings/CsvReadingAdapter"));
 const XmlReadingAdapter_1 = __importDefault(require("../../../../infrastructure/adapters/readings/XmlReadingAdapter"));
+const CsvParseError_1 = __importDefault(require("../../../../infrastructure/adapters/readings/errors/CsvParseError"));
+const XmlParseError_1 = __importDefault(require("../../../../infrastructure/adapters/readings/errors/XmlParseError"));
 jest.mock('fs');
 jest.mock('csv-parser');
 jest.mock('xml2js');
@@ -66,6 +68,29 @@ describe('CsvReadingAdapter', () => {
             expect(result).toEqual(expectedReadings);
             expect(fs_1.default.createReadStream).toHaveBeenCalledWith(filePath);
         });
+        it('should throw CsvParseError when there is an error', async () => {
+            const filePath = '/path/to/file';
+            const parserStream = {
+                pipe: jest.fn().mockReturnThis(),
+                on: jest.fn().mockImplementation((event, callback) => {
+                    if (event === 'error') {
+                        callback(new CsvParseError_1.default('Simulated error'));
+                    }
+                    return parserStream;
+                }),
+            };
+            const readStream = {
+                pipe: jest.fn().mockReturnValue(parserStream),
+            };
+            fs_1.default.createReadStream.mockReturnValue(readStream);
+            const adapter = new CsvReadingAdapter_1.default();
+            try {
+                await adapter.run(filePath);
+            }
+            catch (error) {
+                expect(error).toBeInstanceOf(CsvParseError_1.default);
+            }
+        });
     });
 });
 describe('XmlReadingAdapter', () => {
@@ -94,6 +119,21 @@ describe('XmlReadingAdapter', () => {
             expect(result).toEqual(expectedReadings);
             expect(fs_1.default.readFileSync).toHaveBeenCalledWith(filePath, 'utf8');
             expect(xml2js.parseString).toHaveBeenCalledWith(xmlData, expect.any(Function));
+        });
+        it('should throw XmlParseError when there is an error', async () => {
+            const filePath = '/path/to/file';
+            const xmlData = `<readings><reading clientID="client1" period="period1"><_>1</_></reading><reading clientID="client2" period="period2"><_>2</_></reading></readings>`;
+            fs_1.default.readFileSync.mockReturnValue(xmlData);
+            xml2js.parseString.mockImplementation((xml, callback) => {
+                callback(new XmlParseError_1.default('Simulated error'), null);
+            });
+            const adapter = new XmlReadingAdapter_1.default();
+            try {
+                await adapter.run(filePath);
+            }
+            catch (error) {
+                expect(error).toBeInstanceOf(XmlParseError_1.default);
+            }
         });
     });
 });

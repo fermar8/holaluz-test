@@ -15,8 +15,11 @@ class ReadingService {
             Median: median,
         }));
     }
+    sortArray(numbers) {
+        return [...numbers].sort((a, b) => a - b);
+    }
     calculateMedian(numbers) {
-        const sortedNumbers = numbers.sort((a, b) => a - b);
+        const sortedNumbers = this.sortArray(numbers);
         const middleIndex = Math.floor(sortedNumbers.length / 2);
         return sortedNumbers[middleIndex];
     }

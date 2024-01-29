@@ -28,22 +28,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const xml2js = __importStar(require("xml2js"));
+const XmlParseError_1 = __importDefault(require("./errors/XmlParseError"));
 class XmlReadingAdapter {
     async run(filePath) {
         const formattedReadings = [];
         const xmlData = fs_1.default.readFileSync(filePath, 'utf8');
-        xml2js.parseString(xmlData, (err, result) => {
-            if (err) {
-                throw err;
-            }
-            for (const reading of result.readings.reading) {
-                const formattedReading = {
-                    clientID: reading.$.clientID.toString(),
-                    period: reading.$.period.toString(),
-                    reading: Number(reading._),
-                };
-                formattedReadings.push(formattedReading);
-            }
+        await new Promise((resolve, reject) => {
+            xml2js.parseString(xmlData, (err, result) => {
+                if (err) {
+                    reject(new XmlParseError_1.default());
+                }
+                for (const reading of result.readings.reading) {
+                    const formattedReading = {
+                        clientID: reading.$.clientID.toString(),
+                        period: reading.$.period.toString(),
+                        reading: Number(reading._),
+                    };
+                    formattedReadings.push(formattedReading);
+                }
+                resolve();
+            });
         });
         return formattedReadings;
     }

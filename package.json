@@ -1,6 +1,7 @@
 {
     "scripts": {
         "test": "jest app",
+        "test:single": "jest app $1",
         "test:verbose": "jest --verbose app",
         "test:coverage": "jest --coverage app",
         "prettier:fix": "npx prettier -w ./**/*.ts",

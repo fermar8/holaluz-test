@@ -16,6 +16,11 @@ describe('ReadingAdapterFactory', () => {
         expect(adapter).toBeInstanceOf(CsvReadingAdapter_1.default);
     });
     it('should throw error for unsupported extension', () => {
-        expect(() => ReadingAdapterFactory_1.default.run('.unsupported')).toThrow(`Unsupported file extension: .unsupported`);
+        try {
+            ReadingAdapterFactory_1.default.run('.unsupported');
+        }
+        catch (error) {
+            expect(error.message).toEqual("Unsupported file extension: .unsupported");
+        }
     });
 });

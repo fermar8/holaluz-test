@@ -1,16 +1,25 @@
 import ReadingAdapter from '../../../infrastructure/adapters/readings/ReadingAdapter';
 import XmlReadingAdapter from '../../../infrastructure/adapters/readings/XmlReadingAdapter';
 import CsvReadingAdapter from '../../../infrastructure/adapters/readings/CsvReadingAdapter';
+import UnsupportedFileExtensionError from './errors/UnsupportedFileExtensionError';
+
+interface AdapterMap {
+  [key: string]: new () => ReadingAdapter;
+}
+
+const adapterMap: AdapterMap = {
+  '.xml': XmlReadingAdapter,
+  '.csv': CsvReadingAdapter,
+};
 
 export default class ReadingAdapterFactory {
   static run(extension: string): ReadingAdapter {
-    switch (extension) {
-      case '.xml':
-        return new XmlReadingAdapter();
-      case '.csv':
-        return new CsvReadingAdapter();
-      default:
-        throw new Error(`Unsupported file extension: ${extension}`);
+    const AdapterClass = adapterMap[extension];
+    if (!AdapterClass) {
+      throw new UnsupportedFileExtensionError(
+        `Unsupported file extension: ${extension}`,
+      );
     }
+    return new AdapterClass();
   }
 }

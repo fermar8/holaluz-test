@@ -5,16 +5,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const XmlReadingAdapter_1 = __importDefault(require("../../../infrastructure/adapters/readings/XmlReadingAdapter"));
 const CsvReadingAdapter_1 = __importDefault(require("../../../infrastructure/adapters/readings/CsvReadingAdapter"));
+const UnsupportedFileExtensionError_1 = __importDefault(require("./errors/UnsupportedFileExtensionError"));
+const adapterMap = {
+    '.xml': XmlReadingAdapter_1.default,
+    '.csv': CsvReadingAdapter_1.default,
+};
 class ReadingAdapterFactory {
     static run(extension) {
-        switch (extension) {
-            case '.xml':
-                return new XmlReadingAdapter_1.default();
-            case '.csv':
-                return new CsvReadingAdapter_1.default();
-            default:
-                throw new Error(`Unsupported file extension: ${extension}`);
+        const AdapterClass = adapterMap[extension];
+        if (!AdapterClass) {
+            throw new UnsupportedFileExtensionError_1.default(`Unsupported file extension: ${extension}`);
         }
+        return new AdapterClass();
     }
 }
 exports.default = ReadingAdapterFactory;
